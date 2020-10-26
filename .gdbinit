@@ -34,7 +34,9 @@ set $ADDRESS_MASK = 0x1FFFFF
 set $CODE_SIZE = 1
 
 target remote localhost:1234
-br *0x7c00 
+#br *0x7c00
+#br *0x9000 
+br *0x903A
 cont
 
 define enable-a20

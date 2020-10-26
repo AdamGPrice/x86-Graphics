@@ -8,11 +8,11 @@
 QEMUOPTS = -drive file=bootloader.img,index=0,media=disk,format=raw -smp 1 -m 512 $(QEMUEXTRA)
 
 %.bin: %.asm
-	nasm -w+all -f bin -o $@ $<
+	nasm -w+all -f bin -l $*.lst -o $@ $<
 	
 boot.bin: boot.asm functions_16.asm
 
-boot2.bin: boot2.asm functions_16.asm 
+boot2.bin: boot2.asm functions_16.asm graphics.asm
 
 bootloader.img: boot.bin boot2.bin
 	dd if=/dev/zero of=bootloader.img count=10000
