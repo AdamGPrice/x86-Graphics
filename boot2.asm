@@ -94,6 +94,28 @@ Second_Stage:
 	push	word 10					; x0
 	call	Draw_Line
 
+	; Rect
+	push	word 9					; colour
+	push	word 22					; height
+	push	word 100				; width
+	push	word 40					; y
+	push	word 80					; x
+	call	Draw_Rect
+
+	push	word 4					; colour
+	push	word 80					; height
+	push	word 20					; width
+	push	word 100				; y
+	push	word 200				; x
+	call	Draw_Rect
+
+	push	word 14					; colour
+	push	word 40					; height
+	push	word 40					; width
+	push	word 120				; y
+	push	word 30					; x
+	call	Draw_Rect
+
 	; This never-ending loop ends the code.  It replaces the hlt instruction
 	; used in earlier examples since that causes some odd behaviour in 
 	; graphical programs.

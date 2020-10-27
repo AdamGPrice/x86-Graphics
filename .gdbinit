@@ -37,7 +37,7 @@ target remote localhost:1234
 #br *0x7c00
 #br *0x9000 
 #br *0x903A
-br *0x917E
+br *0x91B3
 cont
 
 define enable-a20
