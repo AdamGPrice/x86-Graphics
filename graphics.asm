@@ -124,14 +124,19 @@ Draw_Line_End:
 
 
 Draw_Pixel:
-	; Set the pixel colour at location A0000h + (y * 320) + x	
+	; Calculate the pixel location in memory. A0000h + (y * 320) + x	
 	mov		ax, [bp + y0]			; y * 320	
 	mov		bx, 320
 	mul		bx
-	add		ax, [bp + x0]			; Add x to the result
+	add		ax, [bp + x0]			; Add x to the result				
 	mov		si, ax					; si is now the offset pixel location from A0000h (Video memory)
 
+	; Error Checking, DS is set to A000h in the function and wont change
+	cmp		si, 0f9ffh				; Check that si is less than 63999
+	ja		Draw_Pixel_End			; Don't access video memory if higher than 63999 
+	
 	mov		al, [bp + colour]		; Get the colour from the stack and make sure its 8 bits
 	mov		[si], al				; Set the colour in video memeory
 
+Draw_Pixel_End:
 	ret
