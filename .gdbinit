@@ -35,7 +35,9 @@ set $CODE_SIZE = 1
 
 target remote localhost:1234
 #br *0x7c00
-br *0x9214
+br *0x9283
+br *0x9314
+br *0x9364
 cont
 
 define enable-a20

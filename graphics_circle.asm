@@ -16,8 +16,11 @@ Draw_Circle:
 
 	push	ax					; Save the state of registers we makes use of
 	push	bx
-	push 	cx
-	push 	dx
+	push 	ds
+	push 	si
+
+	mov		ax, 0A000h			; Set the memory address to A0000h using the segment register
+	mov		ds, ax
 
 	mov		ax, [bp + r]		; x = r
 	mov		[bp - y], ax
@@ -28,64 +31,60 @@ Draw_Circle:
 
 
 Draw_Pixels_Loop:
-	mov		ah, 0ch
-	mov		bh, 0
-	mov		al, [bp + colour]	; Set pixel colour.
-
 	mov		cx, word [bp + centerX]		; Quadrant 1
 	add		cx, word [bp - x]			; xc + x, yc + y
 	mov		dx, word [bp + centerY]
 	add		dx, word [bp - y]
-	int		10h
+	call	Circle_Put_Pixel
 
 	mov		cx, word [bp + centerX]		; Quadrant 2
 	sub		cx, word [bp - x]			; xc - x, yc + y
 	mov		dx, word [bp + centerY]
 	add		dx, word [bp - y]
-	int		10h
+	call	Circle_Put_Pixel
 
 	mov		cx, word [bp + centerX]		; Quadrant 3
 	add		cx, word [bp - x]			; xc + x, yc - y
 	mov		dx, word [bp + centerY]
 	sub		dx, word [bp - y]
-	int		10h
+	call	Circle_Put_Pixel
 
 	mov		cx, word [bp + centerX]		; Quadrant 4
 	sub		cx, word [bp - x]			; xc - x, yc - y
 	mov		dx, word [bp + centerY]
 	sub		dx, word [bp - y]
-	int		10h
+	call	Circle_Put_Pixel
 
 	mov		cx, word [bp + centerX]		; Quadrant 5
 	add		cx, word [bp - y]			; xc + y, yc + x
 	mov		dx, word [bp + centerY]
 	add		dx, word [bp - x]
-	int		10h
+	call	Circle_Put_Pixel
 
 	mov		cx, word [bp + centerX]		; Quadrant 6
 	sub		cx, word [bp - y]			; xc - y, yc + x
 	mov		dx, word [bp + centerY]
 	add		dx, word [bp - x]
-	int		10h
+	call	Circle_Put_Pixel
 
 	mov		cx, word [bp + centerX]		; Quadrant 7
 	add		cx, word [bp - y]			; xc + y, yc - x
 	mov		dx, word [bp + centerY]
 	sub		dx, word [bp - x]
-	int		10h
+	call	Circle_Put_Pixel
 
 	mov		cx, word [bp + centerX]		; Quadrant 7
 	sub		cx, word [bp - y]			; xc - y, yc - x
 	mov		dx, word [bp + centerY]
 	sub		dx, word [bp - x]
-	int		10h
+	call	Circle_Put_Pixel
 
 	inc		word [bp - x]		; x++
 
-	cmp		[bp - d], word 0
-	jle		something_else
+	cmp		[bp - d], word 0	; check if d <= 0
+	jle		Something_Else		; if true skip changes directly below
+	
 	dec		word [bp - y]		; y--
-
 	mov		ax, [bp - x]		; d = d * (x - y) + 10
 	sub		ax, [bp - y]
 	mov 	bx, word 4
@@ -93,10 +92,10 @@ Draw_Pixels_Loop:
 	add		ax, word 10
 	add		ax, [bp - d]
 	mov		[bp - d], ax
-	jmp		Is_Still_Looping
+	jmp		Is_Still_Looping	; if these changes are made skip other changes
 
-something_else:
-	mov		ax, [bp - x]
+Something_Else:	
+	mov		ax, [bp - x]		; d = d + 4 * x + 6; 
 	mov		bx, 4
 	mul 	bx
 	add		ax, word 6
@@ -118,3 +117,19 @@ Draw_Circle_End:
 	mov		sp, bp
 	pop		bp
 	ret		8
+
+
+Circle_Put_Pixel:
+	mov		ax,	dx					; y * 320	
+	mov		bx, 320
+	mul		bx
+	add		ax, cx					; Add x to the result				
+	mov		si, ax					; si is now the offset pixel location from A0000h (Video memory)
+
+	; Error Checking, DS is set to A000h in the function and wont change
+	cmp		si, 0f9ffh				; Check that si is 63999 or less
+	ja		Draw_Pixel_End			; Don't access video memory if higher than 63999 
+
+	mov		al, [bp + colour]		; Get the colour from the stack and make sure its 8 bits using al
+	mov		[si], al				; Write the colour into video memeory
+	ret
