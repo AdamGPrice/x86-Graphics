@@ -96,10 +96,10 @@ Skip_X_Change:
 
 Draw_Line_End:
 	; Restore registers back to their original value 
-	pop 	si
-	pop 	ds
+	pop		si
+	pop		ds
 	pop		bx
-	pop	 	ax
+	pop		ax
 
 	mov		sp, bp
 	pop		bp

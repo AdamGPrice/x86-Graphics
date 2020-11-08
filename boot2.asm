@@ -10,8 +10,8 @@ ORG 9000h
 ;	Start of the second stage of the boot loader
 	
 Second_Stage:
-    mov 	si, second_stage_msg	; Output our greeting message
-    call 	Console_WriteLine_16
+	mov 	si, second_stage_msg	; Output our greeting message
+	call 	Console_WriteLine_16
 
 	mov		ah, 0					; Set OS to graphics mode 13h
 	mov		al, 13h

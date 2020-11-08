@@ -1,5 +1,8 @@
-%include "graphics_line.asm"       ; Line drawing function
-%include "graphics_rect.asm"       ; Rect drawing function
+%include "graphics_line.asm"
+%include "graphics_rect.asm"
+%include "graphics_circle.asm"
+
+; File contains all our graphics calls for different primitives
 
 Graphics_Calls:
     ; Draw 10 Different lines using Draw_Line function 
@@ -111,7 +114,6 @@ Graphics_Calls:
 	push	word 40					; x
 	call	Draw_Rect
 
-	
 	push	word 13					; colour
 	push	word 40					; height
 	push	word 100				; width
@@ -119,4 +121,24 @@ Graphics_Calls:
 	push	word 40					; x
 	call	Draw_Rect
 
-    ret
+	; Drawing Circles
+
+	push	word 12					; colour
+	push	word 46					; radius
+	push	word 100				; centery
+	push	word 80					; centerx
+	call	Draw_Circle
+
+	push	word 3					; colour
+	push	word 20					; radius
+	push	word 140				; centery
+	push	word 200				; centerx
+	call	Draw_Circle
+
+	push	word 9					; colour
+	push	word 60					; radius
+	push	word 80					; centery
+	push	word 220				; centerx
+	call	Draw_Circle
+
+	ret

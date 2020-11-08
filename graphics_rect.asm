@@ -79,4 +79,4 @@ Skip_Width_Changes:
 	mov		[bp + height], ax
 
 Skip_Height_Changes:
-	ret
+	ret								; Return to the main function
