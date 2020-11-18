@@ -5,7 +5,7 @@
 %assign y1		10
 %assign colour	12
 
-; offsets for local variables
+; Draw_Line local variables
 %assign deltaX	2
 %assign deltaY	4
 %assign error	6
@@ -107,12 +107,14 @@ Draw_Line_End:
 
 
 Draw_Pixel:
-	; Calculate the pixel location in memory. A0000h + (y * 320) + x	
-	mov		ax, [bp + y0]			; y * 320	
-	mov		bx, 320
-	mul		bx
-	add		ax, [bp + x0]			; Add x to the result				
-	mov		si, ax					; si is now the offset pixel location from A0000h (Video memory)
+	; si = (y * 320) + x	
+	mov		si,	[bp + y0]			; y * 256	
+	sal		si, 8			
+	mov		ax, [bp + y0]			; y * 64
+	sal		ax, 6
+	add		si, ax					; si = y * 256 + y * 64 = y * 320
+	add		si, [bp + x0]			; Add x to the result
+									; si is now the offset pixel location from A0000h (Video memory)
 
 	; Error Checking, DS is set to A000h in the function and wont change
 	cmp		si, 0f9ffh				; Check that si is 63999 or less

@@ -1,6 +1,7 @@
 %include "graphics_line.asm"
 %include "graphics_rect.asm"
 %include "graphics_circle.asm"
+%include "graphics_polygon.asm"
 
 ; File contains all our graphics calls for different primitives
 
@@ -77,7 +78,7 @@ Graphics_Calls:
 	push	word 10					; x0
 	call	Draw_Line
 
-	; Draw different rects using Draw_Rect function 
+	; Draw rects using Draw_Rect function 
 	
 	push	word 9					; colour
 	push	word 22					; height
@@ -141,4 +142,44 @@ Graphics_Calls:
 	push	word 220				; centerx
 	call	Draw_Circle
 
+	; Drawing polygons
+	push	word 9					; colour
+	push	word 3					; point count
+	push	Triangle				; memory address for points
+	call	Draw_Poly
+
+	push	word 14					; colour
+	push	word 10					; point count
+	push	Star2					; memory address for points
+	call	Draw_Poly
+
+	push	word 11					; colour
+	push	word 6					; point count
+	push	Hexagon					; memory address for points
+	call	Draw_Poly
+
 	ret
+
+
+; Our arrays of points for Draw_Poly
+Triangle:	dw 90, 233
+			dw 175, 233
+			dw 175, 300
+
+Star2:		dw 35, 	160		
+			dw 80, 	180		
+			dw 80, 	230
+			dw 110, 190
+			dw 160, 210
+			dw 128, 160
+			dw 160, 110
+			dw 110, 130
+			dw 80, 	90
+			dw 80, 	140
+
+Hexagon:	dw 20, 	20
+			dw 20, 	40
+			dw 38, 	50
+ 			dw 56,  40
+ 			dw 56,  20
+			dw 38, 	10

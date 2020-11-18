@@ -27,13 +27,16 @@ Draw_Rect:
 	cld								; Clear direction flag to make sure we are incrementing when copying into memory
 
 	; calculate where the top left corner of the rectangle is in memory
-	mov		ax, [bp + y]			; y * 320	
-	mov		bx, 320
-	mul		bx
-	add		ax, [bp + x]			; Add x to the result	
-	mov		di, ax					; Where in memory to start copying bytes to
+	; di = (y * 320) + 320	
+	mov		di,	[bp + y]			; y * 256	
+	sal		di, 8			
+	mov		ax, [bp + y]			; y * 64
+	sal		ax, 6
+	add		di, ax					; di = y * 256 + y * 64 = y * 320
+	add		di, [bp + x]			; Add x to the result
+									; di is now the offset pixel location from A0000h (Video memory)
 
-	mov		ax, 320					; calculate the offset to add to di after each block of memory fill 
+	mov		ax, 320					; calculate the offset to add to di after each stosb call
 	sub		ax, [bp + width]		; offset = width of screen - width of rect
 	mov		[bp - offset], ax
 
@@ -46,7 +49,6 @@ Rect_loop:
 	sub		[bp + height], word 1
 	jnz		Rect_loop
 
-
 Draw_Rect_End:
 	pop		di
 	pop		es
@@ -57,7 +59,6 @@ Draw_Rect_End:
 	mov		sp, bp
 	pop		bp
 	ret		10						; Return, removing 5 parameters from the stack
-
 
 Rect_Boundry_Checks:
 	cmp		[bp + x], word 319		; if x or y is outside the window range exit

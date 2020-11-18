@@ -16,6 +16,8 @@ Draw_Circle:
 
 	push	ax					; Save the state of registers we makes use of
 	push	bx
+	push	cx
+	push	dx
 	push 	ds
 	push 	si
 
@@ -85,10 +87,9 @@ Draw_Pixels_Loop:
 	jle		Something_Else		; if true skip changes directly below
 	
 	dec		word [bp - y]		; y--
-	mov		ax, [bp - x]		; d = d * (x - y) + 10
+	mov		ax, [bp - x]		; d = d + 4 * (x - y) + 10
 	sub		ax, [bp - y]
-	mov 	bx, word 4
-	mul		bx
+	sal		ax, 2
 	add		ax, word 10
 	add		ax, [bp - d]
 	mov		[bp - d], ax
@@ -96,8 +97,7 @@ Draw_Pixels_Loop:
 
 Something_Else:	
 	mov		ax, [bp - x]		; d = d + 4 * x + 6; 
-	mov		bx, 4
-	mul 	bx
+	sal		ax, 2
 	add		ax, word 6
 	add		ax, [bp - d]
 	mov		[bp - d], ax
@@ -109,7 +109,9 @@ Is_Still_Looping:
 	jge		Draw_Pixels_Loop
 
 Draw_Circle_End:
-	pop		dx					; Restore the registers we used back to their orignal value
+	pop		si						; Restore the registers we used back to their orignal value
+	pop		ds
+	pop		dx
 	pop		cx
 	pop		bx
 	pop		ax
@@ -120,16 +122,21 @@ Draw_Circle_End:
 
 
 Circle_Put_Pixel:
-	mov		ax,	dx					; y * 320	
-	mov		bx, 320
-	mul		bx
-	add		ax, cx					; Add x to the result				
-	mov		si, ax					; si is now the offset pixel location from A0000h (Video memory)
+	; si = (y * 320) + x	
+	mov		si,	dx			; y * 256	
+	sal		si, 8			
+	mov		ax, dx			; y * 64
+	sal		ax, 6
+	add		si, ax			; si = y * 256 + y * 64 = y * 320
+	add		si, cx 			; Add x to the result
+							; si is now the offset pixel location from A0000h (Video memory)	
 
 	; Error Checking, DS is set to A000h in the function and wont change
 	cmp		si, 0f9ffh				; Check that si is 63999 or less
-	ja		Draw_Pixel_End			; Don't access video memory if higher than 63999 
+	ja		Circle_Put_Pixel_End	; Don't write to video memory if higher than 63999 
 
 	mov		al, [bp + colour]		; Get the colour from the stack and make sure its 8 bits using al
 	mov		[si], al				; Write the colour into video memeory
+
+Circle_Put_Pixel_End:
 	ret
