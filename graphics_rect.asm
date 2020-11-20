@@ -1,9 +1,21 @@
+; Draws a rect on the screen with x, y 
+; being the top left corner of the rect.
+;
+; push onto the stack in this order:
+; 	word 	colour
+; 	word	height
+; 	word	width	
+; 	word	y
+; 	word	x
+;
+; 'Draw_Rect' cleans up the stack on return
+
 ; Parameters
 %assign	x			4
 %assign y			6
 %assign	width		8
 %assign height		10
-%assign rectColour	12
+%assign colour		12
 
 ; local variables
 %assign offset 		2
@@ -11,10 +23,10 @@
 Draw_Rect:
 	push	bp
 	mov		bp, sp
-	sub		sp, 2					; Reserve space for local variables
+	sub		sp, 2					; Reserve space for local variable
 
 	push	ax						; Push registers that we will use onto the stack
-	push 	bx
+	push	bx
 	push	cx
 	push	es
 	push	di
@@ -40,8 +52,14 @@ Draw_Rect:
 	sub		ax, [bp + width]		; offset = width of screen - width of rect
 	mov		[bp - offset], ax
 
-	mov		al, [bp + rectColour]	; The byte to be repeated. The colour 
+	mov		al, [bp + colour]		; The byte to be repeated. The colour 
 Rect_loop:
+	; Error Checking, ES is set to A000h at the start of the function and wont change until ret
+	mov		bx, di
+	add		bx, [bp + width]
+	cmp		ax, 0f9ffh				; Check if (DI + width) is less than 63999 and below 0  
+	ja		Draw_Pixel_End			; Don't access video memory if higher than 63999 
+
 	mov		cx, [bp + width]		; how many times to repeat
 	rep		stosb
 

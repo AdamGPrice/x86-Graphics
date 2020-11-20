@@ -108,18 +108,11 @@ Graphics_Calls:
 	push	word 260				; x
 	call	Draw_Rect
 
-	push	word 13					; colour
-	push	word 40					; height
-	push	word 100				; width
-	push	word 180				; y
-	push	word 40					; x
-	call	Draw_Rect
-
-	push	word 13					; colour
-	push	word 40					; height
-	push	word 100				; width
-	push	word 180				; y
-	push	word 40					; x
+	push	word 12					; colour
+	push	word 60					; height
+	push	word 40					; width
+	push	word 10					; y
+	push	word 240				; x
 	call	Draw_Rect
 
 	; Drawing Circles
@@ -146,23 +139,24 @@ Graphics_Calls:
 	push	word 9					; colour
 	push	word 3					; point count
 	push	Triangle				; memory address for points
-	call	Draw_Poly
+	call	Draw_Polygon
 
 	push	word 14					; colour
 	push	word 10					; point count
 	push	Star2					; memory address for points
-	call	Draw_Poly
+	call	Draw_Polygon
 
 	push	word 11					; colour
 	push	word 6					; point count
 	push	Hexagon					; memory address for points
-	call	Draw_Poly
+	call	Draw_Polygon
 
 	ret
 
 
-; Our arrays of points for Draw_Poly
-Triangle:	dw 90, 233
+; Our arrays of points for Draw_Polygon
+;			dw y, 	x
+Triangle:	dw 90,	233
 			dw 175, 233
 			dw 175, 300
 

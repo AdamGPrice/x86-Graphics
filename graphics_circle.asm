@@ -1,7 +1,18 @@
+; Draws a circle on the screen with x, y
+; being the center postion.
+;
+; push onto the stack in this order:
+; 	word 	colour
+; 	word	radius
+; 	word	centerY	
+; 	word	centerX
+;
+; 'Draw_Circle' cleans up the stack on return
+
 ; Parameters
 %assign centerX		4
 %assign centerY		6
-%assign r			8
+%assign radius		8
 %assign colour		10
 
 ; local varibles
@@ -14,7 +25,7 @@ Draw_Circle:
 	mov		bp, sp
 	sub		sp, 6				; Reserve space on the stack for local variables
 
-	push	ax					; Save the state of registers we makes use of
+	push	ax					; Save the state of registers we use
 	push	bx
 	push	cx
 	push	dx
@@ -24,10 +35,10 @@ Draw_Circle:
 	mov		ax, 0A000h			; Set the memory address to A0000h using the segment register
 	mov		ds, ax
 
-	mov		ax, [bp + r]		; x = r
+	mov		ax, [bp + radius]		; x = r
 	mov		[bp - y], ax
 	mov		[bp - x], word 0	; y = 0
-	add		ax, [bp + r]		; d = 3 - (2 * r)
+	add		ax, [bp + radius]		; d = 3 - (2 * r)
 	mov		[bp - d], word 3
 	sub		[bp - d], ax
 
@@ -131,7 +142,7 @@ Circle_Put_Pixel:
 	add		si, cx 			; Add x to the result
 							; si is now the offset pixel location from A0000h (Video memory)	
 
-	; Error Checking, DS is set to A000h in the function and wont change
+	; Error Checking, DS is set to A000h at the start of the function and wont change until ret
 	cmp		si, 0f9ffh				; Check that si is 63999 or less
 	ja		Circle_Put_Pixel_End	; Don't write to video memory if higher than 63999 
 
