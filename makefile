@@ -34,5 +34,6 @@ clean:
 	rm -f boot.bin
 	rm -f boot2.bin
 	rm -f bootloader.img
-	
+	rm -f boot.lst
+	rm -f boot2.lst
 	
